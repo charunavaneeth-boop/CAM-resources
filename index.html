@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAM Resource Sheet — CNC Turning &amp; Milling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- ==========================================================================
+     HOW TO UPDATE THIS SITE
+     --------------------------------------------------------------------------
+     Everything students see comes from the SITE object below (search for
+     "EDIT FROM HERE"). You never need to touch the HTML or CSS.
+
+     To add a lesson, copy an existing { ... } block and change the text.
+     To add a module or a whole course, copy the surrounding block.
+     Save the file, upload it, done.
+
+     Lesson "kind" can be:
+       "video"  -> url must be an EMBED url (see notes at the top of SITE)
+       "pdf"    -> url is a direct/shared link to the PDF. Opens in a new tab.
+       "link"   -> anything else: a web page, a Fusion file, a drawing pack.
+     ========================================================================== -->
+
+<style>
+:root{
+  /* Drawing-sheet palette. Sampled from an ISO drawing + a Fusion CAM screen. */
+  --sheet:      #FBFBF9;   /* sheet stock */
+  --sheet-2:    #F2F3F1;   /* recessed panel */
+  --ink:        #14181D;   /* drawing ink */
+  --ink-soft:   #5A646E;   /* secondary lettering */
+  --rule:       #D3D8DC;   /* hairline / construction line */
+  --rule-2:     #E7EAEC;   /* lightest rule */
+  --blueprint:  #1F4E79;   /* dimension + primary action */
+  --blueprint-w:#E9F0F6;   /* blueprint wash */
+  --rapid:      #B87309;   /* rapid-traverse amber: advanced track */
+  --rapid-w:    #FBF2DF;
+  --stock:      #E4E7EA;
+
+  --f-display: 'Archivo', system-ui, sans-serif;
+  --f-body:    'IBM Plex Sans', system-ui, sans-serif;
+  --f-data:    'IBM Plex Mono', ui-monospace, monospace;
+
+  --rail: 34px;            /* zone rail width, as on a real sheet border */
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--sheet);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+
+:focus-visible{
+  outline:2px solid var(--blueprint);
+  outline-offset:2px;
+}
+
+/* ---- sheet border + zone rail --------------------------------------- */
+.sheet{
+  max-width:1180px;
+  margin:0 auto;
+  padding-left:var(--rail);
+  position:relative;
+  min-height:100vh;
+}
+.zone-rail{
+  position:absolute;left:0;top:0;bottom:0;width:var(--rail);
+  border-right:1px solid var(--rule);
+  display:flex;flex-direction:column;
+  font-family:var(--f-data);font-size:10px;color:var(--ink-soft);
+  user-select:none;
+}
+.zone-rail span{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--rule-2);
+}
+.zone-rail span:last-child{border-bottom:none}
+
+/* ---- title block (the header) --------------------------------------- */
+.titleblock{
+  border:1px solid var(--ink);
+  border-left:none;
+  margin:22px 18px 0 0;
+  display:grid;
+  grid-template-columns:minmax(0,2.1fr) repeat(3,minmax(0,1fr));
+}
+.tb-cell{
+  padding:11px 14px;
+  border-left:1px solid var(--rule);
+  min-width:0;
+}
+.tb-cell:first-child{border-left:none;background:var(--sheet-2)}
+.tb-label{
+  font-family:var(--f-data);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:3px;
+}
+.tb-value{
+  font-family:var(--f-display);font-weight:600;font-size:14px;letter-spacing:-.005em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tb-cell:first-child .tb-value{font-size:20px;font-weight:700;letter-spacing:-.02em}
+
+/* ---- toolbar --------------------------------------------------------- */
+.toolbar{
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  margin:0 18px 0 0;padding:12px 0;
+  border-bottom:1px solid var(--rule);
+}
+.crumb{
+  font-family:var(--f-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.crumb a:hover{color:var(--blueprint);text-decoration:underline;text-underline-offset:3px}
+.search{
+  margin-left:auto;position:relative;
+}
+.search input{
+  font-family:var(--f-data);font-size:12.5px;
+  padding:7px 11px 7px 11px;width:230px;max-width:48vw;
+  border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:0;
+}
+.search input::placeholder{color:#9AA3AB}
+.search input:focus{border-color:var(--blueprint);outline:none;box-shadow:0 0 0 1px var(--blueprint)}
+
+/* ---- generic section head ------------------------------------------- */
+.sec-head{
+  display:flex;align-items:baseline;gap:12px;
+  margin:34px 18px 14px 0;
+}
+.sec-head h2{
+  font-family:var(--f-display);font-weight:700;font-size:15px;
+  letter-spacing:.10em;text-transform:uppercase;margin:0;
+}
+.sec-head .hr{flex:1;height:1px;background:var(--rule)}
+.sec-head .count{font-family:var(--f-data);font-size:11px;color:var(--ink-soft)}
+
+/* ---- course cards ---------------------------------------------------- */
+.cards{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(275px,1fr));
+  gap:1px;background:var(--rule);
+  border:1px solid var(--rule);margin-right:18px;
+}
+.card{
+  background:var(--sheet);padding:20px 20px 18px;
+  display:flex;flex-direction:column;gap:10px;
+  position:relative;transition:background .16s ease;
+  text-align:left;width:100%;
+}
+.card:hover,.card:focus-visible{background:#fff}
+.card .code{
+  font-family:var(--f-data);font-size:10.5px;letter-spacing:.13em;
+  color:var(--blueprint);text-transform:uppercase;
+}
+.card.adv .code{color:var(--rapid)}
+.card h3{
+  font-family:var(--f-display);font-weight:700;font-size:20px;line-height:1.2;
+  margin:0;letter-spacing:-.015em;
+}
+.card p{margin:0;color:var(--ink-soft);font-size:13.5px;line-height:1.5}
+.card .meta{
+  margin-top:auto;padding-top:12px;border-top:1px solid var(--rule-2);
+  font-family:var(--f-data);font-size:11px;color:var(--ink-soft);
+  display:flex;gap:14px;flex-wrap:wrap;
+}
+.card .stripe{position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blueprint)}
+.card.adv .stripe{background:var(--rapid)}
+.card .arrow{
+  font-family:var(--f-data);font-size:12px;color:var(--blueprint);
+  opacity:0;transform:translateX(-4px);transition:all .16s ease;
+}
+.card.adv .arrow{color:var(--rapid)}
+.card:hover .arrow,.card:focus-visible .arrow{opacity:1;transform:none}
+
+/* ---- notice ---------------------------------------------------------- */
+.notice{
+  margin:26px 18px 0 0;padding:14px 16px;
+  background:var(--rapid-w);border-left:3px solid var(--rapid);
+  font-size:13.5px;color:#54430F;
+}
+.notice b{font-family:var(--f-display);font-weight:700}
+
+/* ---- setup sheet (course page) --------------------------------------- */
+.course-wrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:0;margin-right:18px}
+@media(max-width:900px){.course-wrap{grid-template-columns:1fr}}
+
+.setup{border:1px solid var(--rule);border-right:none}
+@media(max-width:900px){.setup{border-right:1px solid var(--rule)}}
+
+.mod{border-bottom:1px solid var(--rule)}
+.mod:last-child{border-bottom:none}
+.mod-head{
+  display:flex;gap:12px;align-items:baseline;
+  padding:13px 16px;background:var(--sheet-2);
+}
+.mod-no{font-family:var(--f-data);font-size:11px;color:var(--ink-soft);letter-spacing:.08em}
+.mod-head h3{
+  font-family:var(--f-display);font-weight:600;font-size:14px;margin:0;
+  letter-spacing:.04em;text-transform:uppercase;
+}
+.op{
+  display:grid;grid-template-columns:44px minmax(0,1fr) auto;
+  align-items:center;gap:12px;
+  padding:11px 16px;width:100%;text-align:left;
+  border-top:1px solid var(--rule-2);
+  transition:background .12s ease;
+}
+.op:hover,.op:focus-visible{background:var(--blueprint-w)}
+.op.on{background:var(--blueprint-w);box-shadow:inset 3px 0 0 var(--blueprint)}
+.adv-page .op:hover,.adv-page .op:focus-visible{background:var(--rapid-w)}
+.adv-page .op.on{background:var(--rapid-w);box-shadow:inset 3px 0 0 var(--rapid)}
+.op .n{font-family:var(--f-data);font-size:11.5px;color:var(--ink-soft)}
+.op .t{font-size:14px;line-height:1.35;min-width:0}
+.op .t small{display:block;color:var(--ink-soft);font-size:12px;margin-top:2px}
+.op .k{
+  font-family:var(--f-data);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:2px 6px;border:1px solid var(--rule);color:var(--ink-soft);white-space:nowrap;
+}
+.op .k.video{border-color:var(--blueprint);color:var(--blueprint)}
+.op .k.pdf{border-color:#7A6A2E;color:#7A6A2E}
+
+/* ---- viewer pane ----------------------------------------------------- */
+.viewer{border:1px solid var(--rule);background:var(--sheet-2);padding:0;align-self:start;position:sticky;top:14px}
+@media(max-width:900px){.viewer{position:static;margin-top:-1px}}
+.viewer-head{padding:14px 16px;border-bottom:1px solid var(--rule)}
+.viewer-head .tb-label{margin-bottom:4px}
+.viewer-head h4{font-family:var(--f-display);font-weight:700;font-size:16px;margin:0;line-height:1.25}
+.viewer-body{padding:16px}
+.frame{position:relative;width:100%;aspect-ratio:16/9;background:#0E1114;border:1px solid var(--rule)}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:none}
+.viewer p{font-size:13.5px;color:var(--ink-soft);margin:12px 0 0}
+.btn{
+  display:inline-block;margin-top:14px;
+  font-family:var(--f-data);font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  padding:9px 16px;background:var(--blueprint);color:#fff;
+}
+.btn:hover{background:#173C5D}
+.adv-page .btn{background:var(--rapid)}
+.adv-page .btn:hover{background:#8F5A07}
+.empty{
+  padding:30px 16px;text-align:center;color:var(--ink-soft);font-size:13.5px;
+}
+.empty .glyph{
+  font-family:var(--f-data);font-size:30px;color:var(--rule);display:block;margin-bottom:8px;
+}
+
+/* ---- footer ---------------------------------------------------------- */
+footer{
+  margin:46px 18px 0 0;padding:16px 0 30px;border-top:1px solid var(--ink);
+  font-family:var(--f-data);font-size:11px;color:var(--ink-soft);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+
+@media(max-width:640px){
+  :root{--rail:22px}
+  .titleblock{grid-template-columns:1fr 1fr}
+  .tb-cell:first-child{grid-column:1/-1}
+  .op{grid-template-columns:34px minmax(0,1fr);gap:8px}
+  .op .k{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="zone-rail" aria-hidden="true">
+    <span>A</span><span>B</span><span>C</span><span>D</span>
+  </div>
+  <div id="app"></div>
+</div>
+
+<script>
+/* ============================================================================
+   EDIT FROM HERE
+   ============================================================================
+
+   VIDEO URLS — this is the part that trips everyone up.
+   The "url" for a video must be an EMBED url, not the address bar url.
+
+   YouTube (unlisted):  https://www.youtube.com/embed/VIDEO_ID
+   OneDrive / SharePoint: open the video > Share or Embed > copy the value
+                          inside src="..." and paste that whole thing here.
+   Microsoft Stream:      Share > Embed > copy the src="..." value.
+
+   PDF URLS — put the PDF next to this file in a folder called "pdfs" and
+   write "pdfs/filename.pdf", or paste a OneDrive share link. Either works.
+   ========================================================================= */
+
+const SITE = {
+  title:    "CAM Resource Sheet",
+  subtitle: "CNC Turning & Milling",
+  teacher:  "Tintu",
+  dept:     "Applied Technology",
+  rev:      "A",
+  updated:  "July 2026",
+
+  courses: [
+    /* ------------------------------------------------------------------ */
+    {
+      id: "turning",
+      code: "CAM-100",
+      title: "CNC Turning — CAM",
+      blurb: "From a 2D drawing to a proven turning program: work offsets, roughing and finishing strategies, threading, and post-processing.",
+      hours: "18 h",
+      advanced: false,
+      modules: [
+        {
+          title: "Setup and Stock",
+          lessons: [
+            { title:"Machine axes and the work coordinate system", note:"Z along the spindle, X on diameter — and why X is doubled.", kind:"video", url:"https://www.youtube.com/embed/dQw4w9WgXcQ", desc:"Sets up every job that follows. Watch before touching the software." },
+            { title:"Defining stock and setting the origin", note:"Fixed size vs. from-solid stock in Fusion 360.", kind:"video", url:"" },
+            { title:"Workholding: 3-jaw, soft jaws, collets", kind:"pdf", url:"pdfs/turning-workholding.pdf", desc:"Reference sheet — print and keep in your folder." },
+            { title:"Setup checklist (before you press cycle start)", kind:"pdf", url:"pdfs/turning-setup-checklist.pdf" }
+          ]
+        },
+        {
+          title: "Roughing",
+          lessons: [
+            { title:"Facing the stock", kind:"video", url:"" },
+            { title:"OD roughing: stepover, stock to leave, retract", note:"The three numbers that decide your cycle time.", kind:"video", url:"" },
+            { title:"Centre drilling and peck drilling", kind:"video", url:"" },
+            { title:"Speeds and feeds for aluminium and mild steel", kind:"pdf", url:"pdfs/turning-speeds-feeds.pdf" }
+          ]
+        },
+        {
+          title: "Finishing and Features",
+          lessons: [
+            { title:"Profile finishing and surface finish", kind:"video", url:"" },
+            { title:"Grooving and parting off safely", kind:"video", url:"" },
+            { title:"Single-point threading", note:"Pitch, depth per pass, thread relief.", kind:"video", url:"" },
+            { title:"Assignment 1 — stepped shaft with M12 thread", kind:"pdf", url:"pdfs/assignment-1-shaft.pdf", desc:"Drawing, tolerance table and marking scheme." }
+          ]
+        },
+        {
+          title: "Simulation and Post",
+          lessons: [
+            { title:"Reading the simulation for collisions and air cuts", kind:"video", url:"" },
+            { title:"Choosing the right post processor", kind:"video", url:"" },
+            { title:"G-code you should be able to read at a glance", kind:"pdf", url:"pdfs/gcode-quick-reference.pdf" },
+            { title:"First-article inspection", note:"Measure, compare, correct the offset.", kind:"video", url:"" }
+          ]
+        }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    {
+      id: "milling",
+      code: "CAM-200",
+      title: "CNC Milling — CAM",
+      blurb: "2D and 3D milling strategies in Fusion 360, tool library management, and proving out a program on the machine.",
+      hours: "22 h",
+      advanced: false,
+      modules: [
+        {
+          title: "Setup and Tooling",
+          lessons: [
+            { title:"WCS, G54 and setting the part zero", kind:"video", url:"" },
+            { title:"Building a tool library that matches the shop", kind:"video", url:"" },
+            { title:"Vice setup, parallels and tramming", kind:"pdf", url:"pdfs/milling-setup.pdf" }
+          ]
+        },
+        {
+          title: "2D Strategies",
+          lessons: [
+            { title:"Face milling", kind:"video", url:"" },
+            { title:"2D contour: tabs, lead-in, multiple depths", kind:"video", url:"" },
+            { title:"2D pocket and rest machining", kind:"video", url:"" },
+            { title:"Drilling cycles and hole recognition", kind:"video", url:"" },
+            { title:"Assignment 2 — pocketed base plate", kind:"pdf", url:"pdfs/assignment-2-baseplate.pdf" }
+          ]
+        },
+        {
+          title: "3D Strategies",
+          lessons: [
+            { title:"Adaptive clearing and why it saves tools", kind:"video", url:"" },
+            { title:"Parallel and scallop finishing", kind:"video", url:"" },
+            { title:"Choosing a ball-nose stepover for a target finish", kind:"pdf", url:"pdfs/stepover-finish-chart.pdf" }
+          ]
+        },
+        {
+          title: "Proving Out",
+          lessons: [
+            { title:"Dry run, single block and rapid override", kind:"video", url:"" },
+            { title:"Fixing a crashed setup — what to check", kind:"video", url:"" }
+          ]
+        }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    {
+      id: "eskills",
+      code: "ES-ADV",
+      title: "Emirates Skills — Advanced Track",
+      blurb: "Focused preparation for selected competitors: drawing interpretation under time pressure, tolerance control, and past competition tasks.",
+      hours: "Selected students",
+      advanced: true,
+      modules: [
+        {
+          title: "Reading the Competition Drawing",
+          lessons: [
+            { title:"GD&T symbols you will actually meet", kind:"pdf", url:"pdfs/es-gdt-symbols.pdf" },
+            { title:"Tolerance stack-up on an assembled part", kind:"video", url:"" },
+            { title:"Datum selection and how it changes your setup", kind:"video", url:"" }
+          ]
+        },
+        {
+          title: "Working Against the Clock",
+          lessons: [
+            { title:"Planning the operation order before you open the software", kind:"video", url:"" },
+            { title:"Cycle-time reduction without losing the tolerance", kind:"video", url:"" },
+            { title:"Setup sheet template", kind:"pdf", url:"pdfs/es-setup-sheet.pdf" }
+          ]
+        },
+        {
+          title: "Metrology and Precision",
+          lessons: [
+            { title:"Micrometer, bore gauge, height gauge — technique", kind:"video", url:"" },
+            { title:"Compensating tool wear mid-job", kind:"video", url:"" }
+          ]
+        },
+        {
+          title: "Past Tasks",
+          lessons: [
+            { title:"Task pack — turning and milling assembly", kind:"pdf", url:"pdfs/es-task-pack-01.pdf" },
+            { title:"Worked solution and judging criteria", kind:"pdf", url:"pdfs/es-task-pack-01-solution.pdf" }
+          ]
+        }
+      ]
+    },
+
+    /* ------------------------------------------------------------------ */
+    {
+      id: "safety",
+      code: "WS-010",
+      title: "Workshop Safety and Machine Care",
+      blurb: "Induction material, PPE requirements, and the daily and weekly maintenance routines for the lathes and mills.",
+      hours: "4 h",
+      advanced: false,
+      modules: [
+        {
+          title: "Induction",
+          lessons: [
+            { title:"Workshop safety induction", kind:"pdf", url:"pdfs/safety-induction.pdf" },
+            { title:"PPE: what, when and why", kind:"video", url:"" },
+            { title:"Emergency stop and lock-out procedure", kind:"video", url:"" }
+          ]
+        },
+        {
+          title: "Machine Care",
+          lessons: [
+            { title:"Daily start-up and shut-down routine", kind:"pdf", url:"pdfs/daily-routine.pdf" },
+            { title:"Coolant, swarf and way lubrication", kind:"video", url:"" }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+/* ============================================================================
+   STOP EDITING HERE. Everything below just draws the page.
+   ========================================================================= */
+
+const app = document.getElementById("app");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+const flat = c => c.modules.flatMap((m,mi) => m.lessons.map((l,li) => ({...l, mi, li})));
+const countAll = c => flat(c).length;
+
+function titleblock(sub){
+  return `<header class="titleblock">
+    <div class="tb-cell">
+      <span class="tb-label">Title</span>
+      <div class="tb-value"><a href="#/">${esc(SITE.title)}</a></div>
+    </div>
+    <div class="tb-cell"><span class="tb-label">Subject</span><div class="tb-value">${esc(sub || SITE.subtitle)}</div></div>
+    <div class="tb-cell"><span class="tb-label">Instructor</span><div class="tb-value">${esc(SITE.teacher)}</div></div>
+    <div class="tb-cell"><span class="tb-label">Rev / Updated</span><div class="tb-value">${esc(SITE.rev)} &middot; ${esc(SITE.updated)}</div></div>
+  </header>`;
+}
+
+function toolbar(crumb){
+  return `<div class="toolbar">
+    <div class="crumb">${crumb}</div>
+    <div class="search"><input id="q" type="search" placeholder="Search all lessons" aria-label="Search all lessons"></div>
+  </div>`;
+}
+
+function foot(){
+  return `<footer>
+    <div>${esc(SITE.dept)} &middot; internal teaching resource</div>
+    <div>Sheet 1 of 1 &middot; Rev ${esc(SITE.rev)}</div>
+  </footer>`;
+}
+
+/* ---------- home ---------- */
+function renderHome(){
+  const cards = SITE.courses.map(c => `
+    <a class="card ${c.advanced ? "adv" : ""}" href="#/c/${esc(c.id)}">
+      <span class="stripe" aria-hidden="true"></span>
+      <span class="code">${esc(c.code)}</span>
+      <h3>${esc(c.title)}</h3>
+      <p>${esc(c.blurb)}</p>
+      <div class="meta">
+        <span>${c.modules.length} modules</span>
+        <span>${countAll(c)} lessons</span>
+        <span>${esc(c.hours)}</span>
+        <span class="arrow">open &rarr;</span>
+      </div>
+    </a>`).join("");
+
+  app.innerHTML = titleblock() + toolbar(`Course index`) + `
+    <div class="sec-head">
+      <h2>Courses</h2><div class="hr"></div>
+      <span class="count">${SITE.courses.length} on this sheet</span>
+    </div>
+    <div class="cards">${cards}</div>
+    <div class="notice">
+      <b>Emirates Skills competitors:</b> the advanced track is open to everyone,
+      but the task packs are set at competition level. Finish CAM-100 and CAM-200 first.
+    </div>` + foot();
+  wireSearch();
+}
+
+/* ---------- search ---------- */
+function wireSearch(){
+  const q = document.getElementById("q");
+  if(!q) return;
+  q.addEventListener("input", () => {
+    const show = on => {
+      const r = document.getElementById("results");
+      if(r) r.style.display = on ? "none" : "";
+      document.querySelectorAll(".cards,.notice,.course-wrap")
+        .forEach(e => e.style.display = on ? "" : "none");
+    };
+    const term = q.value.trim().toLowerCase();
+    if(!term){ show(true); return; }
+    const hits = [];
+    SITE.courses.forEach(c => flat(c).forEach(l => {
+      if((l.title + " " + (l.note||"")).toLowerCase().includes(term))
+        hits.push({c, l});
+    }));
+    const list = hits.length ? hits.map(({c,l}) => `
+      <a class="op" href="#/c/${esc(c.id)}/${l.mi}/${l.li}">
+        <span class="n">${esc(c.code)}</span>
+        <span class="t">${esc(l.title)}<small>${esc(c.title)}</small></span>
+        <span class="k ${esc(l.kind)}">${esc(l.kind)}</span>
+      </a>`).join("")
+      : `<div class="empty"><span class="glyph">[  ]</span>No lesson matches that.</div>`;
+
+    let res = document.getElementById("results");
+    if(!res){
+      res = document.createElement("div");
+      res.id = "results";
+      document.querySelector(".toolbar").after(res);
+    }
+    res.innerHTML = `<div class="sec-head"><h2>Search</h2><div class="hr"></div>
+      <span class="count">${hits.length} result${hits.length===1?"":"s"}</span></div>
+      <div class="setup" style="border-right:1px solid var(--rule);margin-right:18px">${list}</div>`;
+    show(false);
+  });
+}
+
+/* ---------- course ---------- */
+function renderCourse(id, mi, li){
+  const c = SITE.courses.find(x => x.id === id);
+  if(!c){ location.hash = "#/"; return; }
+
+  const sel = (mi!=null && c.modules[mi] && c.modules[mi].lessons[li])
+    ? c.modules[mi].lessons[li] : null;
+
+  const sheet = c.modules.map((m, i) => `
+    <section class="mod">
+      <div class="mod-head">
+        <span class="mod-no">OP ${String(i+1).padStart(2,"0")}</span>
+        <h3>${esc(m.title)}</h3>
+      </div>
+      ${m.lessons.map((l, j) => `
+        <a class="op ${(i==mi && j==li) ? "on" : ""}" href="#/c/${esc(c.id)}/${i}/${j}">
+          <span class="n">${String(i+1)}.${String(j+1)}</span>
+          <span class="t">${esc(l.title)}${l.note ? `<small>${esc(l.note)}</small>` : ""}</span>
+          <span class="k ${esc(l.kind)}">${esc(l.kind)}</span>
+        </a>`).join("")}
+    </section>`).join("");
+
+  let pane;
+  if(!sel){
+    pane = `<div class="empty"><span class="glyph">&#9633;</span>
+      Pick a lesson from the sheet to open it here.</div>`;
+  } else if(sel.kind === "video" && sel.url){
+    pane = `<div class="frame"><iframe src="${esc(sel.url)}" allowfullscreen
+        allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
+        title="${esc(sel.title)}"></iframe></div>
+      ${sel.desc ? `<p>${esc(sel.desc)}</p>` : ""}`;
+  } else if(sel.kind === "video"){
+    pane = `<div class="empty"><span class="glyph">&#9654;</span>
+      Recording not uploaded yet. Ask in class if you need it early.</div>`;
+  } else {
+    pane = `${sel.desc ? `<p style="margin-top:0">${esc(sel.desc)}</p>` : ""}
+      <a class="btn" href="${esc(sel.url)}" target="_blank" rel="noopener">
+        Open ${sel.kind === "pdf" ? "PDF" : "resource"} &nearr;</a>`;
+  }
+
+  app.innerHTML = titleblock(c.title) +
+    toolbar(`<a href="#/">Course index</a> &nbsp;/&nbsp; ${esc(c.code)}`) + `
+    <div class="sec-head">
+      <h2>${esc(c.title)}</h2><div class="hr"></div>
+      <span class="count">${countAll(c)} lessons &middot; ${esc(c.hours)}</span>
+    </div>
+    <div class="course-wrap ${c.advanced ? "adv-page" : ""}">
+      <div class="setup">${sheet}</div>
+      <aside class="viewer">
+        <div class="viewer-head">
+          <span class="tb-label">Now open</span>
+          <h4>${sel ? esc(sel.title) : "Nothing selected"}</h4>
+        </div>
+        <div class="viewer-body">${pane}</div>
+      </aside>
+    </div>` + foot();
+  wireSearch();
+}
+
+/* ---------- router ---------- */
+function route(){
+  const p = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+  if(p[0] === "c" && p[1]) renderCourse(p[1], p[2] != null ? +p[2] : null, p[3] != null ? +p[3] : null);
+  else renderHome();
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
