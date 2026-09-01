@@ -33,11 +33,16 @@
   --ink-soft:   #5A646E;   /* secondary lettering */
   --rule:       #D3D8DC;   /* hairline / construction line */
   --rule-2:     #E7EAEC;   /* lightest rule */
-  --blueprint:  #00732F;   /* dimension + primary action */
-  --blueprint-w:#E8F2EB;   /* blueprint wash */
-  --rapid:      #C8102E;   /* rapid-traverse amber: advanced track */
+    --blueprint:  #00732F;
+  --blueprint-w:#E8F2EB;
+  --rapid:      #C8102E;
   --rapid-w:    #FBEAEC;
   --stock:      #E4E7EA;
+
+  --band-1: #C8102E;
+  --band-2: #00732F;
+  --band-3: #FBFBF9;
+  --band-4: #14181D;
 
   --f-display: 'Archivo', system-ui, sans-serif;
   --f-body:    'IBM Plex Sans', system-ui, sans-serif;
@@ -65,7 +70,13 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 }
 
 /* ---- sheet border + zone rail --------------------------------------- */
-.sheet{
+.ribbon{display:flex;height:5px;width:100%;position:sticky;top:0;z-index:20}
+.ribbon i{flex:1;display:block}
+.ribbon i:nth-child(1){flex:0 0 30%;background:var(--band-1)}
+.ribbon i:nth-child(2){flex:1;background:var(--band-2)}
+.ribbon i:nth-child(3){background:var(--band-3);flex:0 0 22px;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
+.ribbon i:nth-child(4){flex:0 0 22px;background:var(--band-4)}
+     .sheet{
   max-width:1180px;
   margin:0 auto;
   padding-left:var(--rail);
@@ -272,7 +283,7 @@ footer{
 </style>
 </head>
 <body>
-
+<div class="ribbon" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <div class="sheet">
   <div class="zone-rail" aria-hidden="true">
     <span>A</span><span>B</span><span>C</span><span>D</span>
